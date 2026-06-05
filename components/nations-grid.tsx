@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { nations } from "@/lib/world-cup-data";
 import { useLanguage } from "./language-provider";
 import { NationCard } from "./nation-card";
@@ -25,10 +25,32 @@ const fifaGroups: Record<string, string[]> = {
 
 const qualifiedNationIds = new Set(Object.values(fifaGroups).flat());
 
-export function NationsGrid() {
+interface NationsGridProps {
+  initialSelectedNationId?: string | null;
+}
+
+export function NationsGrid({ initialSelectedNationId }: NationsGridProps) {
   const { t } = useLanguage();
-  const [selectedNationId, setSelectedNationId] = useState<string | null>(null);
+  const [selectedNationId, setSelectedNationId] = useState<string | null>(initialSelectedNationId || null);
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    if (initialSelectedNationId) {
+      setSelectedNationId(initialSelectedNationId);
+    }
+  }, [initialSelectedNationId]);
+
+  useEffect(() => {
+    const handleNationSelection = (event: CustomEvent) => {
+      setSelectedNationId(event.detail);
+    };
+
+    window.addEventListener("nationSelected", handleNationSelection as EventListener);
+
+    return () => {
+      window.removeEventListener("nationSelected", handleNationSelection as EventListener);
+    };
+  }, []);
 
   const qualifiedNations = useMemo(
     () => nations.filter((nation) => qualifiedNationIds.has(nation.id)),

@@ -65,8 +65,8 @@ export const translations: Record<string, Record<string, string>> = {
     canada: "Canada",
   },
   es: {
-    title: "Copa Mundial FIFA 2026",
-    subtitle: "Unidos 2026",
+    title: "FIFA World Cup 2026",
+    subtitle: "USA, Mexico and Canada",
     allNationsTitle: "Todas las Naciones",
     allNationsSubtitle: "todas las naciones",
     players: "Jugadores",
