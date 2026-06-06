@@ -95,7 +95,10 @@ export function MatchFixtures() {
     if (teamName === "TBD") return "TBD";
     const normalized = normalizeCountryName(teamName);
     const translationKey = normalized.replace(/-/g, "");
-    return t(translationKey) || teamName;
+    const translated = t(translationKey);
+    // If in English mode and no translation found, return the original teamName
+    // If in Bangla mode and no translation found, return the original teamName
+    return translated || teamName;
   };
 
   const getTranslatedStage = (stage: string): string => {
@@ -109,6 +112,86 @@ export function MatchFixtures() {
       "FINAL": t("final"),
     };
     return stageMap[stage] || stage;
+  };
+
+  const convertToBanglaNumerals = (str: string): string => {
+    const banglaNumerals: Record<string, string> = {
+      '0': '০', '1': '১', '2': '২', '3': '৩', '4': '৪',
+      '5': '৫', '6': '৬', '7': '৭', '8': '৮', '9': '৯'
+    };
+    return str.replace(/\d/g, (digit) => banglaNumerals[digit] || digit);
+  };
+
+  const getTranslatedDate = (date: string): string => {
+    if (language === "en") return date;
+    
+    // Parse date like "Friday, 12 June 2026"
+    const parts = date.split(", ");
+    if (parts.length < 2) return date;
+    
+    const dayName = parts[0].toLowerCase();
+    const datePart = parts[1];
+    const dateParts = datePart.split(" ");
+    
+    if (dateParts.length < 3) return date;
+    
+    const day = convertToBanglaNumerals(dateParts[0]);
+    const month = dateParts[1].toLowerCase();
+    const year = convertToBanglaNumerals(dateParts[2]);
+    
+    const translatedDay = t(dayName) || dayName;
+    const translatedMonth = t(month) || month;
+    
+    return `${translatedDay}, ${day} ${translatedMonth} ${year}`;
+  };
+
+  const getTranslatedTime = (time: string): string => {
+    if (language === "en") return time;
+    
+    // Parse time like "1:00 AM" or "11:30 PM"
+    const parts = time.split(" ");
+    if (parts.length < 2) return time;
+    
+    const timePart = parts[0];
+    const period = parts[1].toLowerCase();
+    
+    const translatedTime = convertToBanglaNumerals(timePart);
+    const translatedPeriod = t(period) || period;
+    
+    return `${translatedTime} ${translatedPeriod}`;
+  };
+
+  const getTranslatedStadium = (stadium: string): string => {
+    if (language === "en") return stadium;
+    
+    // Convert stadium name to translation key (lowercase, no spaces, no special chars)
+    const translationKey = stadium
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "")
+      .replace(/\s+/g, "");
+    
+    return t(translationKey) || stadium;
+  };
+
+  const getTranslatedGroup = (group: string): string => {
+    if (language === "en") return group;
+    
+    // Translate group names like "Group A" to "গ্রুপ এ"
+    const groupMap: Record<string, string> = {
+      "Group A": "গ্রুপ এ",
+      "Group B": "গ্রুপ বি",
+      "Group C": "গ্রুপ সি",
+      "Group D": "গ্রুপ ডি",
+      "Group E": "গ্রুপ ই",
+      "Group F": "গ্রুপ এফ",
+      "Group G": "গ্রুপ জি",
+      "Group H": "গ্রুপ এইচ",
+      "Group I": "গ্রুপ আই",
+      "Group J": "গ্রুপ জে",
+      "Group K": "গ্রুপ কে",
+      "Group L": "গ্রুপ এল",
+    };
+    return groupMap[group] || group;
   };
 
   const getCardBackgroundColor = () => {
@@ -230,14 +313,14 @@ export function MatchFixtures() {
                                 {/* Group name at top right for Group Stage */}
                                 <div className="absolute top-2 right-2">
                                   <span className="text-[9px] px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-                                    {match.group}
+                                    {getTranslatedGroup(match.group || "")}
                                   </span>
                                 </div>
 
                                 {/* Date and Time for Group Stage */}
                                 <div className="flex items-center justify-center mb-2 pt-4">
                                   <span className="text-[10px] text-muted-foreground">
-                                    {match.date} • {match.time}
+                                    {getTranslatedDate(match.date)} • {getTranslatedTime(match.time)}
                                   </span>
                                 </div>
 
@@ -368,9 +451,9 @@ export function MatchFixtures() {
                         <div className="relative p-3">
                           {/* Header: Time and Info */}
                           <div className="flex items-center justify-between mb-2 pb-2 border-b border-border/20">
-                            <span className="text-xs font-semibold text-muted-foreground">{match.time}</span>
+                            <span className="text-xs font-semibold text-muted-foreground">{getTranslatedTime(match.time)}</span>
                             <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-                              {match.date}
+                              {getTranslatedDate(match.date)}
                             </span>
                           </div>
 
@@ -443,7 +526,7 @@ export function MatchFixtures() {
                           {/* Stadium */}
                           <div className="flex items-center gap-1 text-muted-foreground text-xs mt-2 pt-2 border-t border-border/20">
                             <MapPin className="h-3 w-3" />
-                            <span className="truncate">{match.stadium}</span>
+                            <span className="truncate">{getTranslatedStadium(match.stadium)}</span>
                           </div>
                         </div>
                       </Card>

@@ -13,11 +13,14 @@ interface NationCardProps {
 }
 
 export function NationCard({ nation, onClick, index }: NationCardProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const getTranslatedCountryName = (nationId: string): string => {
     const translationKey = nationId.replace(/-/g, "");
-    return t(translationKey) || nation.name;
+    const translated = t(translationKey);
+    // If in English mode and no translation found, return the original nation.name
+    // If in Bangla mode and no translation found, return the original nation.name
+    return translated || nation.name;
   };
 
   const cardStyle: React.CSSProperties = {
