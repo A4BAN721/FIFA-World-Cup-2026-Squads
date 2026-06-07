@@ -70,7 +70,7 @@ export const translations: Record<string, Record<string, string>> = {
     hours: "Hours",
     minutes: "Minutes",
     seconds: "Seconds",
-    untilWorldCup: "until World Cup 2026",
+    untilWorldCup: "UNTIL WORLD CUP 2026",
     // Match fixtures
     matchFixtures: "Match Fixtures",
     schedule: "FIFA World Cup 2026 Schedule",
