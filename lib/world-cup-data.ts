@@ -1,5 +1,7 @@
 import jerseyNumbersByName from './jersey-numbers.json';
 
+const jerseyNumbersByNameMap: Record<string, number> = jerseyNumbersByName as Record<string, number>;
+
 export interface Player {
   id: string;
   fullName: string;
@@ -301,7 +303,7 @@ function generatePlayers(nationId: string, nationName: string): Player[] {
   
   const playersByNation: Record<string, PlayerData[]> = {
     argentina: [
-      { name: "Emiliano Martínez", club: "Aston Villa", value: "€35M", position: "Goalkeeper" },
+      { name: "Emili4ano Martínez", club: "Aston Villa", value: "€35M", position: "Goalkeeper" },
       { name: "Gerónimo Rulli", club: "Marseille", value: "€8M", position: "Goalkeeper" },
       { name: "Walter Benítez", club: "Unknown", value: "€0M", position: "Goalkeeper" },
       { name: "Cristian Romero", club: "Tottenham", value: "€60M", position: "Defender" },
@@ -1643,7 +1645,7 @@ function generatePlayers(nationId: string, nationName: string): Player[] {
       weight: weights[index % weights.length],
       strongFoot: feet[index % feet.length],
       marketValue: p.value,
-      jerseyNumber: p.number ?? jerseyNumbersByName[p.name] ?? index + 1,
+      jerseyNumber: p.number ?? jerseyNumbersByNameMap[p.name] ?? index + 1,
     };
   });
 }
