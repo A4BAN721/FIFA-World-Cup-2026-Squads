@@ -6,6 +6,7 @@ import { useTheme } from "next-themes";
 import { useLanguage } from "./language-provider";
 import { LanguageSelector } from "./language-selector";
 import { Button } from "@/components/ui/button";
+import { Countdown } from "./countdown";
 
 export function Header() {
   const { t } = useLanguage();
@@ -38,6 +39,10 @@ export function Header() {
                 {t("subtitle")}
               </p>
             </div>
+          </div>
+
+          <div className="flex-1 flex justify-center">
+            <Countdown />
           </div>
 
           <div className="flex items-center gap-3 self-start md:self-center">

@@ -65,6 +65,12 @@ export const translations: Record<string, Record<string, string>> = {
     canada: "Canada",
     all: "All",
     jerseyColors: "Jersey Colors",
+    // Countdown
+    days: "Days",
+    hours: "Hours",
+    minutes: "Minutes",
+    seconds: "Seconds",
+    untilWorldCup: "until World Cup 2026",
     // Match fixtures
     matchFixtures: "Match Fixtures",
     schedule: "FIFA World Cup 2026 Schedule",
@@ -85,7 +91,7 @@ export const translations: Record<string, Record<string, string>> = {
     belgium: "Belgium",
     bosniaherzegovina: "Bosnia & Herzegovina",
     brazil: "Brazil",
-    capeverde: "Cabo Verde",
+    capeverde: "Cape Verde",
     chile: "Chile",
     china: "China",
     colombia: "Colombia",
@@ -163,6 +169,12 @@ export const translations: Record<string, Record<string, string>> = {
     canada: "কানাডা",
     all: "সব",
     jerseyColors: "জার্সি রং",
+    // Countdown
+    days: "দিন",
+    hours: "ঘন্টা",
+    minutes: "মিনিট",
+    seconds: "সেকেন্ড",
+    untilWorldCup: "বিশ্বকাপ ২০২৬ পর্যন্ত",
     // Match fixtures
     matchFixtures: "ম্যাচ ফিক্সচার",
     schedule: "ফিফা বিশ্বকাপ ২০২৬ সময়সূচী",
