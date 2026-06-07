@@ -14,7 +14,7 @@ export function Countdown() {
 
   useEffect(() => {
     // Target date: June 12, 2026, 01:00 AM BST
-    // BST is UTC+1, so we need to convert to UTC
+    // BST is UTC+6, so we need to convert to UTC
     // June 12, 2026, 01:00 AM BST = June 12, 2026, 00:00 AM UTC
     const targetDate = new Date("2026-06-12T00:00:00Z").getTime();
 
