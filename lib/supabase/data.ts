@@ -1,6 +1,6 @@
 import type { Match } from "@/lib/match-fixtures";
 import type { Nation, Player } from "@/lib/world-cup-data";
-import { createClient } from "./client";
+import { createClient, getSupabaseConfig } from "./client";
 
 type NationRow = {
   id: string;
@@ -43,6 +43,10 @@ type TranslationRow = {
 };
 
 export async function getNations(): Promise<Nation[]> {
+  if (!getSupabaseConfig()) {
+    return [];
+  }
+
   const supabase = createClient();
 
   const [{ data: nationRows, error: nationError }, { data: playerRows, error: playerError }] =
@@ -92,6 +96,10 @@ export async function getNations(): Promise<Nation[]> {
 }
 
 export async function getMatchFixtures(): Promise<Match[]> {
+  if (!getSupabaseConfig()) {
+    return [];
+  }
+
   const supabase = createClient();
   const { data, error } = await supabase.from("match_fixtures").select("*");
 
@@ -112,6 +120,10 @@ export async function getMatchFixtures(): Promise<Match[]> {
 }
 
 export async function getTranslations(): Promise<Record<string, Record<string, string>>> {
+  if (!getSupabaseConfig()) {
+    return {};
+  }
+
   const supabase = createClient();
   const { data, error } = await supabase.from("translations").select("*");
 
