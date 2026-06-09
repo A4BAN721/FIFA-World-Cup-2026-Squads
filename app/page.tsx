@@ -7,6 +7,7 @@ import { TriondaBackground } from "@/components/trionda-background";
 import { MatchFixtures } from "@/components/match-fixtures";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useLanguage } from "@/components/language-provider";
+import { Instagram, Mail } from "lucide-react";
 
 export default function Home() {
   const { t } = useLanguage();
@@ -81,6 +82,27 @@ export default function Home() {
             </TabsContent>
           </Tabs>
         </div>
+        <footer className="border-t border-border/30 bg-card/60 backdrop-blur-xl">
+          <div className="container mx-auto flex flex-col items-center justify-center gap-3 px-4 py-5 text-sm text-muted-foreground sm:flex-row sm:gap-6">
+            <a
+              className="inline-flex items-center gap-2 transition-colors hover:text-foreground"
+              href="mailto:md.aaban080511@gmail.com"
+            >
+              <Mail className="h-4 w-4" />
+              md.aaban080511@gmail.com
+            </a>
+            <span className="hidden h-4 w-px bg-border/60 sm:block" />
+            <a
+              className="inline-flex items-center gap-2 transition-colors hover:text-foreground"
+              href="https://www.instagram.com/md.aaban721"
+              rel="noreferrer"
+              target="_blank"
+            >
+              <Instagram className="h-4 w-4" />
+              md.aaban721
+            </a>
+          </div>
+        </footer>
       </div>
     </main>
   );

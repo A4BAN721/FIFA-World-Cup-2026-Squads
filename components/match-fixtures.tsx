@@ -29,10 +29,15 @@ export function MatchFixtures({
 }: MatchFixturesProps) {
   const { t, language } = useLanguage();
   const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [search, setSearch] = useState(initialSearch);
   const [selectedStage, setSelectedStage] = useState<string>(initialSelectedStage);
   const [matchFixtures, setMatchFixtures] = useState<Match[]>(fallbackMatchFixtures);
   const [nations, setNations] = useState<Nation[]>(fallbackNations);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -269,15 +274,18 @@ export function MatchFixtures({
   };
 
   const getCardBackgroundColor = () => {
-    return theme === "dark" ? "rgba(30, 30, 35, 0.6)" : "rgba(255, 255, 255, 0.7)";
+    const activeTheme = mounted ? theme : "dark";
+    return activeTheme === "dark" ? "rgba(30, 30, 35, 0.6)" : "rgba(255, 255, 255, 0.7)";
   };
 
   const getCardBorderColor = () => {
-    return theme === "dark" ? "rgba(255, 255, 255, 0.15)" : "rgba(0, 0, 0, 0.1)";
+    const activeTheme = mounted ? theme : "dark";
+    return activeTheme === "dark" ? "rgba(255, 255, 255, 0.15)" : "rgba(0, 0, 0, 0.1)";
   };
 
   const getTextShadowColor = () => {
-    return theme === "dark" ? "rgba(0, 0, 0, 0.8)" : "rgba(255, 255, 255, 0.9)";
+    const activeTheme = mounted ? theme : "dark";
+    return activeTheme === "dark" ? "rgba(0, 0, 0, 0.8)" : "rgba(255, 255, 255, 0.9)";
   };
 
   return (

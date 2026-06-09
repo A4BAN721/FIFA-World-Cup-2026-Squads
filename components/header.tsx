@@ -14,6 +14,7 @@ export function Header() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setTheme("dark");
     setMounted(true);
   }, []);
 

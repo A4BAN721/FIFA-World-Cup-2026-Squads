@@ -120,15 +120,15 @@ export function NationCard({ nation, onClick, index }: NationCardProps) {
           <div style={lowerPanelStyle} className="-mx-5 -mb-5 mt-6 space-y-3 p-5">
             <div className="flex items-center justify-between gap-3 rounded-[1.5rem] border border-white/10 bg-black/75 p-4 shadow-[0_16px_45px_-28px_rgba(0,0,0,0.9)]">
               <div className="flex items-center gap-3">
-                <div className="grid h-10 w-10 place-items-center rounded-3xl border border-white/10 bg-white/10 text-lg">
+                <div className="hidden">
                   <span className="text-foreground">⚽</span>
                 </div>
                 <div>
-                  <p className={`text-[10px] text-muted-foreground ${labelSpacingClass}`}>{t("squadValue")}</p>
-                  <p className="text-sm font-semibold text-foreground">{formatSquadValue(nation.totalSquadValue)}</p>
+                  <p className={`text-[10px] text-white/70 ${labelSpacingClass}`}>{t("squadValue")}</p>
+                  <p className="text-sm font-semibold text-white">{formatSquadValue(nation.totalSquadValue)}</p>
                 </div>
               </div>
-              <span className={`rounded-full bg-muted/20 px-3 py-1 text-[11px] text-muted-foreground ${mutedPillSpacingClass}`}>
+              <span className={`rounded-full bg-white/10 px-3 py-1 text-[11px] text-white ${mutedPillSpacingClass}`}>
                 {nation.players.length} {t("players").toLowerCase()}
               </span>
             </div>
