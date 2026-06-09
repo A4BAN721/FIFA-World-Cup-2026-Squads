@@ -12,14 +12,25 @@ import { useLanguage } from "./language-provider";
 import { useTheme } from "next-themes";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { NationFlag } from "./nation-flag";
 import { Search, Calendar, MapPin, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 
-export function MatchFixtures() {
+interface MatchFixturesProps {
+  initialSearch?: string;
+  initialSelectedStage?: string;
+  onViewChange?: (view: { search: string; selectedStage: string }) => void;
+}
+
+export function MatchFixtures({
+  initialSearch = "",
+  initialSelectedStage = "ALL",
+  onViewChange,
+}: MatchFixturesProps) {
   const { t, language } = useLanguage();
   const { theme } = useTheme();
-  const [search, setSearch] = useState("");
-  const [selectedStage, setSelectedStage] = useState<string>("ALL");
+  const [search, setSearch] = useState(initialSearch);
+  const [selectedStage, setSelectedStage] = useState<string>(initialSelectedStage);
   const [matchFixtures, setMatchFixtures] = useState<Match[]>(fallbackMatchFixtures);
   const [nations, setNations] = useState<Nation[]>(fallbackNations);
 
@@ -46,6 +57,10 @@ export function MatchFixtures() {
       isMounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    onViewChange?.({ search, selectedStage });
+  }, [onViewChange, search, selectedStage]);
 
   const stages = useMemo(() => {
     const uniqueStages = Array.from(new Set(matchFixtures.map((m) => m.stage)));
@@ -125,6 +140,8 @@ export function MatchFixtures() {
   const getTranslatedTeamName = (teamName: string): string => {
     if (teamName === "TBD") return "TBD";
     const normalized = normalizeCountryName(teamName);
+    if (language === "en" && normalized === "bosnia-herzegovina") return "Bosnia";
+    if (language === "bn" && normalized === "bosnia-herzegovina") return "বসনিয়া";
     const translationKey = normalized.replace(/-/g, "");
     const translated = t(translationKey);
     return translated === translationKey ? teamName : translated;
@@ -132,6 +149,7 @@ export function MatchFixtures() {
 
   const getTranslatedStage = (stage: string): string => {
     const stageMap: Record<string, string> = {
+      ALL: t("all"),
       "GROUP STAGE": t("groupStage"),
       "ROUND OF 32": t("roundOf32"),
       "ROUND OF 16": t("roundOf16"),
@@ -141,6 +159,11 @@ export function MatchFixtures() {
       "FINAL": t("final"),
     };
     return stageMap[stage] || stage;
+  };
+
+  const getMatchCountText = (count: number): string => {
+    const value = language === "bn" ? convertToBanglaNumerals(String(count)) : String(count);
+    return `${value} ${t("matches")}`;
   };
 
   const convertToBanglaNumerals = (str: string): string => {
@@ -283,19 +306,12 @@ export function MatchFixtures() {
                   : "bg-card/80 text-muted-foreground hover:bg-card"
               }`}
             >
-              {stage}
+              {getTranslatedStage(stage)}
             </button>
           ))}
         </div>
-      </div>
-
-      {/* Title */}
-      <div className="text-center mb-4">
-        <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-1">
-          {t("matchFixtures")}
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          {t("schedule")}
+        <p className="text-center text-sm text-muted-foreground">
+          {t("clickNationToViewSquad")}
         </p>
       </div>
 
@@ -321,7 +337,7 @@ export function MatchFixtures() {
                   </h3>
                   <div className="flex-1 h-px bg-border/50" />
                   <span className="text-xs text-muted-foreground">
-                    {matches.length} Matches
+                    {getMatchCountText(matches.length)}
                   </span>
                 </div>
 
@@ -333,7 +349,7 @@ export function MatchFixtures() {
                       </h4>
                       <div className="flex-1 h-px bg-border/30" />
                       <span className="text-[10px] text-muted-foreground">
-                        {matchday.matches.length} Matches
+                        {getMatchCountText(matchday.matches.length)}
                       </span>
                     </div>
 
@@ -378,28 +394,42 @@ export function MatchFixtures() {
                                 {/* Teams - Horizontal Layout */}
                                 <div className="flex items-center justify-between gap-2">
                                   {/* Home Team */}
-                                  <div className="flex-1">
+                                  <div className="min-w-0 flex-1">
                                     {homeNationId ? (
                                       <button
                                         onClick={() => {
                                           window.dispatchEvent(
-                                            new CustomEvent("nationSelected", { detail: homeNationId })
+                                            new CustomEvent("nationSelected", {
+                                              detail: { nationId: homeNationId, returnTab: "fixtures", returnScrollY: window.scrollY },
+                                            })
                                           );
                                         }}
-                                        className="flex items-center gap-2 w-full"
+                                        className="flex w-full min-w-0 items-center gap-2"
                                         style={{ ['--team-color' as any]: homeColor, ['--shadow-color' as any]: getTextShadowColor() }}
                                       >
-                                        <span className="text-xl">{getNationFlag(match.homeTeam)}</span>
-                                        <span className="text-xs font-semibold text-foreground">
-                                          <span className="hover:text-[var(--team-color)] transition-colors cursor-pointer hover:drop-shadow-[0_0_2px_var(--shadow-color)]">
+                                        <NationFlag
+                                          className="h-5 w-7"
+                                          emoji={getNationFlag(match.homeTeam)}
+                                          fallbackClassName="text-xl"
+                                          label={match.homeTeam}
+                                          nationId={homeNationId}
+                                        />
+                                        <span className="min-w-0 truncate text-xs font-semibold text-foreground">
+                                          <span className="block truncate hover:text-[var(--team-color)] transition-colors cursor-pointer hover:drop-shadow-[0_0_2px_var(--shadow-color)]">
                                             {getTranslatedTeamName(match.homeTeam)}
                                           </span>
                                         </span>
                                       </button>
                                     ) : (
-                                      <div className="flex items-center gap-2">
-                                        <span className="text-xl">{getNationFlag(match.homeTeam)}</span>
-                                        <span className="text-xs font-semibold text-muted-foreground">
+                                      <div className="flex min-w-0 items-center gap-2">
+                                        <NationFlag
+                                          className="h-5 w-7"
+                                          emoji={getNationFlag(match.homeTeam)}
+                                          fallbackClassName="text-xl"
+                                          label={match.homeTeam}
+                                          nationId={homeNationId}
+                                        />
+                                        <span className="min-w-0 truncate text-xs font-semibold text-muted-foreground">
                                           {getTranslatedTeamName(match.homeTeam)}
                                         </span>
                                       </div>
@@ -412,30 +442,44 @@ export function MatchFixtures() {
                                   </div>
 
                                   {/* Away Team */}
-                                  <div className="flex-1">
+                                  <div className="min-w-0 flex-1">
                                     {awayNationId ? (
                                       <button
                                         onClick={() => {
                                           window.dispatchEvent(
-                                            new CustomEvent("nationSelected", { detail: awayNationId })
+                                            new CustomEvent("nationSelected", {
+                                              detail: { nationId: awayNationId, returnTab: "fixtures", returnScrollY: window.scrollY },
+                                            })
                                           );
                                         }}
-                                        className="flex items-center gap-2 w-full justify-end"
+                                        className="flex w-full min-w-0 items-center justify-end gap-2"
                                         style={{ ['--team-color' as any]: awayColor, ['--shadow-color' as any]: getTextShadowColor() }}
                                       >
-                                        <span className="text-xs font-semibold text-foreground">
-                                          <span className="hover:text-[var(--team-color)] transition-colors cursor-pointer hover:drop-shadow-[0_0_2px_var(--shadow-color)]">
+                                        <span className="min-w-0 truncate text-right text-xs font-semibold text-foreground">
+                                          <span className="block truncate hover:text-[var(--team-color)] transition-colors cursor-pointer hover:drop-shadow-[0_0_2px_var(--shadow-color)]">
                                             {getTranslatedTeamName(match.awayTeam)}
                                           </span>
                                         </span>
-                                        <span className="text-xl">{getNationFlag(match.awayTeam)}</span>
+                                        <NationFlag
+                                          className="h-5 w-7"
+                                          emoji={getNationFlag(match.awayTeam)}
+                                          fallbackClassName="text-xl"
+                                          label={match.awayTeam}
+                                          nationId={awayNationId}
+                                        />
                                       </button>
                                     ) : (
-                                      <div className="flex items-center gap-2 justify-end">
-                                        <span className="text-xs font-semibold text-muted-foreground">
+                                      <div className="flex min-w-0 items-center justify-end gap-2">
+                                        <span className="min-w-0 truncate text-right text-xs font-semibold text-muted-foreground">
                                           {getTranslatedTeamName(match.awayTeam)}
                                         </span>
-                                        <span className="text-xl">{getNationFlag(match.awayTeam)}</span>
+                                        <NationFlag
+                                          className="h-5 w-7"
+                                          emoji={getNationFlag(match.awayTeam)}
+                                          fallbackClassName="text-xl"
+                                          label={match.awayTeam}
+                                          nationId={awayNationId}
+                                        />
                                       </div>
                                     )}
                                   </div>
@@ -473,7 +517,7 @@ export function MatchFixtures() {
                 <div className="flex-1 h-px bg-border/50" />
                 {matches.length > 1 && (
                   <span className="text-xs text-muted-foreground">
-                    {matches.length} Matches
+                    {getMatchCountText(matches.length)}
                   </span>
                 )}
               </div>
@@ -513,28 +557,42 @@ export function MatchFixtures() {
                           {/* Teams - Horizontal Layout */}
                           <div className="flex items-center justify-between gap-2">
                             {/* Home Team */}
-                            <div className="flex-1">
+                            <div className="min-w-0 flex-1">
                               {homeNationId ? (
                                 <button
                                   onClick={() => {
                                     window.dispatchEvent(
-                                      new CustomEvent("nationSelected", { detail: homeNationId })
+                                      new CustomEvent("nationSelected", {
+                                        detail: { nationId: homeNationId, returnTab: "fixtures", returnScrollY: window.scrollY },
+                                      })
                                     );
                                   }}
-                                  className="flex items-center gap-2 w-full"
+                                  className="flex w-full min-w-0 items-center gap-2"
                                   style={{ ['--team-color' as any]: homeColor, ['--shadow-color' as any]: getTextShadowColor() }}
                                 >
-                                  <span className="text-xl">{getNationFlag(match.homeTeam)}</span>
-                                  <span className="text-xs font-semibold text-foreground">
-                                    <span className="hover:text-[var(--team-color)] transition-colors cursor-pointer hover:drop-shadow-[0_0_2px_var(--shadow-color)]">
+                                  <NationFlag
+                                    className="h-5 w-7"
+                                    emoji={getNationFlag(match.homeTeam)}
+                                    fallbackClassName="text-xl"
+                                    label={match.homeTeam}
+                                    nationId={homeNationId}
+                                  />
+                                  <span className="min-w-0 truncate text-xs font-semibold text-foreground">
+                                    <span className="block truncate hover:text-[var(--team-color)] transition-colors cursor-pointer hover:drop-shadow-[0_0_2px_var(--shadow-color)]">
                                       {getTranslatedTeamName(match.homeTeam)}
                                     </span>
                                   </span>
                                 </button>
                               ) : (
-                                <div className="flex items-center gap-2">
-                                  <span className="text-xl">{getNationFlag(match.homeTeam)}</span>
-                                  <span className="text-xs font-semibold text-muted-foreground">
+                                <div className="flex min-w-0 items-center gap-2">
+                                  <NationFlag
+                                    className="h-5 w-7"
+                                    emoji={getNationFlag(match.homeTeam)}
+                                    fallbackClassName="text-xl"
+                                    label={match.homeTeam}
+                                    nationId={homeNationId}
+                                  />
+                                  <span className="min-w-0 truncate text-xs font-semibold text-muted-foreground">
                                     {getTranslatedTeamName(match.homeTeam)}
                                   </span>
                                 </div>
@@ -547,30 +605,44 @@ export function MatchFixtures() {
                             </div>
 
                             {/* Away Team */}
-                            <div className="flex-1">
+                            <div className="min-w-0 flex-1">
                               {awayNationId ? (
                                 <button
                                   onClick={() => {
                                     window.dispatchEvent(
-                                      new CustomEvent("nationSelected", { detail: awayNationId })
+                                      new CustomEvent("nationSelected", {
+                                        detail: { nationId: awayNationId, returnTab: "fixtures", returnScrollY: window.scrollY },
+                                      })
                                     );
                                   }}
-                                  className="flex items-center gap-2 w-full justify-end"
+                                  className="flex w-full min-w-0 items-center justify-end gap-2"
                                   style={{ ['--team-color' as any]: awayColor, ['--shadow-color' as any]: getTextShadowColor() }}
                                 >
-                                  <span className="text-xs font-semibold text-foreground">
-                                    <span className="hover:text-[var(--team-color)] transition-colors cursor-pointer hover:drop-shadow-[0_0_2px_var(--shadow-color)]">
+                                  <span className="min-w-0 truncate text-right text-xs font-semibold text-foreground">
+                                    <span className="block truncate hover:text-[var(--team-color)] transition-colors cursor-pointer hover:drop-shadow-[0_0_2px_var(--shadow-color)]">
                                       {getTranslatedTeamName(match.awayTeam)}
                                     </span>
                                   </span>
-                                  <span className="text-xl">{getNationFlag(match.awayTeam)}</span>
+                                  <NationFlag
+                                    className="h-5 w-7"
+                                    emoji={getNationFlag(match.awayTeam)}
+                                    fallbackClassName="text-xl"
+                                    label={match.awayTeam}
+                                    nationId={awayNationId}
+                                  />
                                 </button>
                               ) : (
-                                <div className="flex items-center gap-2 justify-end">
-                                  <span className="text-xs font-semibold text-muted-foreground">
+                                <div className="flex min-w-0 items-center justify-end gap-2">
+                                  <span className="min-w-0 truncate text-right text-xs font-semibold text-muted-foreground">
                                     {getTranslatedTeamName(match.awayTeam)}
                                   </span>
-                                  <span className="text-xl">{getNationFlag(match.awayTeam)}</span>
+                                  <NationFlag
+                                    className="h-5 w-7"
+                                    emoji={getNationFlag(match.awayTeam)}
+                                    fallbackClassName="text-xl"
+                                    label={match.awayTeam}
+                                    nationId={awayNationId}
+                                  />
                                 </div>
                               )}
                             </div>

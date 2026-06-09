@@ -1,13 +1,36 @@
 export function normalizeCountryName(name: string): string {
-  const nameMap: Record<string, string> = {
+  const directNameMap: Record<string, string> = {
     "Bosnia & Herzegovina": "bosnia-herzegovina",
-    "CÃ´te d'Ivoire": "ivory-coast",
+    "Côte d'Ivoire": "ivory-coast",
+    "Cote d'Ivoire": "ivory-coast",
+    "Côte d’Ivoire": "ivory-coast",
+    "Cote d’Ivoire": "ivory-coast",
     "DR Congo": "dr-congo",
     "Cabo Verde": "cape-verde",
     "South Korea": "south-korea",
-    "TÃ¼rkiye": "turkiye",
-    "CuraÃ§ao": "curacao",
+    "Türkiye": "turkiye",
+    "Curaçao": "curacao",
+    Curacao: "curacao",
   };
 
-  return nameMap[name] || name.toLowerCase().replace(/\s+/g, "-");
+  if (directNameMap[name]) return directNameMap[name];
+
+  const normalizedName = name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[’']/g, "")
+    .toLowerCase()
+    .trim();
+
+  const normalizedNameMap: Record<string, string> = {
+    "bosnia & herzegovina": "bosnia-herzegovina",
+    "cote divoire": "ivory-coast",
+    "dr congo": "dr-congo",
+    "cabo verde": "cape-verde",
+    curacao: "curacao",
+    "south korea": "south-korea",
+    turkiye: "turkiye",
+  };
+
+  return normalizedNameMap[normalizedName] || normalizedName.replace(/\s+/g, "-");
 }

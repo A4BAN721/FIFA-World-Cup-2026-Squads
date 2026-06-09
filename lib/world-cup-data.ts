@@ -61,6 +61,9 @@ export const translations: Record<string, Record<string, string>> = {
     both: "Both",
     language: "Language",
     hosted: "Hosted by",
+    groups: "Groups",
+    fixtures: "Fixtures",
+    clickNationToViewSquad: "Click a nation to view their squad",
     mexico: "Mexico",
     usa: "USA",
     canada: "Canada",
@@ -84,6 +87,7 @@ export const translations: Record<string, Record<string, string>> = {
     bronzeFinal: "BRONZE FINAL",
     final: "FINAL",
     matchday: "Matchday",
+    matches: "Matches",
     vs: "VS",
     // Country names
     argentina: "Argentina",
@@ -164,6 +168,9 @@ export const translations: Record<string, Record<string, string>> = {
     both: "উভয়",
     language: "ভাষা",
     hosted: "আয়োজক",
+    groups: "গ্রুপ",
+    fixtures: "ফিক্সচার",
+    clickNationToViewSquad: "স্কোয়াড দেখতে একটি দেশ নির্বাচন করুন",
     mexico: "মেক্সিকো",
     usa: "যুক্তরাষ্ট্র",
     canada: "কানাডা",
@@ -187,6 +194,7 @@ export const translations: Record<string, Record<string, string>> = {
     bronzeFinal: "ব্রোঞ্জ ফাইনাল",
     final: "ফাইনাল",
     matchday: "ম্যাচডে",
+    matches: "ম্যাচ",
     vs: "বনাম",
     // Country names
     argentina: "আর্জেন্টিনা",
@@ -1657,7 +1665,7 @@ export const nations: Nation[] = [
     flag: "🇺🇸",
     confederation: "CONCACAF",
     totalSquadValue: "€380M",
-    jerseyColors: { primary: "#002868", secondary: "#FFFFFF", accent: "#BF0A30" },
+    jerseyColors: { primary: "#FFFFFF", secondary: "#BF0A30", accent: "#002868" },
     players: generatePlayers("usa", "United States"),
   },
   {
@@ -1738,7 +1746,7 @@ export const nations: Nation[] = [
     flag: "🇪🇸",
     confederation: "UEFA",
     totalSquadValue: "€1.1B",
-    jerseyColors: { primary: "#AA151B", secondary: "#F1BF00", accent: "#FFFFFF" },
+    jerseyColors: { primary: "#AA151B", secondary: "#F1BF00", accent: "#002B5C" },
     players: generatePlayers("spain", "Spain"),
   },
   {
@@ -2031,7 +2039,7 @@ export const nations: Nation[] = [
     flag: "🇿🇦",
     confederation: "CAF",
     totalSquadValue: "€180M",
-    jerseyColors: { primary: "#007A4D", secondary: "#FFB612", accent: "#000000" },
+    jerseyColors: { primary: "#FFB612", secondary: "#007A4D", accent: "#000000" },
     players: [],
   },
   {
@@ -2061,7 +2069,7 @@ export const nations: Nation[] = [
     flag: "🇬🇭",
     confederation: "CAF",
     totalSquadValue: "€130M",
-    jerseyColors: { primary: "#CE1126", secondary: "#FCD116", accent: "#006B3F" },
+    jerseyColors: { primary: "#FFFFFF", secondary: "#FCD116", accent: "#006B3F" },
     players: [],
   },
   {
@@ -2101,7 +2109,7 @@ export const nations: Nation[] = [
     flag: "🇯🇴",
     confederation: "AFC",
     totalSquadValue: "€18M",
-    jerseyColors: { primary: "#000000", secondary: "#FFFFFF", accent: "#007A3D" },
+    jerseyColors: { primary: "#FFFFFF", secondary: "#CE1126", accent: "#000000" },
     players: [],
   },
   {
@@ -2191,7 +2199,7 @@ export const nations: Nation[] = [
     flag: "🇸🇪",
     confederation: "UEFA",
     totalSquadValue: "€260M",
-    jerseyColors: { primary: "#006AA7", secondary: "#FECC00", accent: "#FFFFFF" },
+    jerseyColors: { primary: "#FECC00", secondary: "#006AA7", accent: "#FFFFFF" },
     players: [],
   },
   {

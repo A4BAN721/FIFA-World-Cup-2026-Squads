@@ -4,6 +4,7 @@ import type { Nation, Player } from "@/lib/world-cup-data";
 import { useLanguage } from "./language-provider";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { NationFlag } from "./nation-flag";
 import { ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useMemo } from "react";
@@ -17,12 +18,58 @@ export function NationDetail({ nation, onBack }: NationDetailProps) {
   const { t, language } = useLanguage();
   const [filterPosition, setFilterPosition] = useState<string>("all");
 
+  const formatSquadValue = (value: string): string => {
+    if (language !== "bn") return value;
+
+    const banglaNumerals: Record<string, string> = {
+      "0": "০",
+      "1": "১",
+      "2": "২",
+      "3": "৩",
+      "4": "৪",
+      "5": "৫",
+      "6": "৬",
+      "7": "৭",
+      "8": "৮",
+      "9": "৯",
+    };
+
+    const match = value.match(/^€([\d.]+)([MB])$/);
+    if (!match) {
+      return value.replace(/\d/g, (digit) => banglaNumerals[digit] || digit);
+    }
+
+    const amount = Number(match[1]);
+    const millions = match[2] === "B" ? amount * 1000 : amount;
+    const crores = millions / 10;
+    const formattedCrores = Number.isInteger(crores)
+      ? String(crores)
+      : String(Number(crores.toFixed(1)));
+
+    return `€${formattedCrores.replace(/\d/g, (digit) => banglaNumerals[digit] || digit)} কোটি`;
+  };
+
   const getTranslatedCountryName = (nationId: string): string => {
     const translationKey = nationId.replace(/-/g, "");
     const translated = t(translationKey);
     // If in English mode and no translation found, return the original nation.name
     // If in Bangla mode and no translation found, return the original nation.name
     return translated || nation.name;
+  };
+
+  const getTranslatedConfederation = (confederation: string): string => {
+    if (language !== "bn") return confederation;
+
+    const confederationMap: Record<string, string> = {
+      AFC: "এএফসি",
+      CAF: "সিএএফ",
+      CONCACAF: "কনকাকাফ",
+      CONMEBOL: "কনমেবল",
+      OFC: "ওএফসি",
+      UEFA: "উয়েফা",
+    };
+
+    return confederationMap[confederation] || confederation;
   };
 
   const filteredPlayers = useMemo(() => {
@@ -67,17 +114,6 @@ export function NationDetail({ nation, onBack }: NationDetailProps) {
         className="relative overflow-hidden"
         style={{ backgroundColor: primaryColor }}
       >
-        <div className="absolute inset-0 opacity-20">
-          <div
-            className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl"
-            style={{ backgroundColor: accentColor }}
-          />
-          <div
-            className="absolute bottom-0 left-0 w-64 h-64 rounded-full blur-2xl"
-            style={{ backgroundColor: secondaryColor }}
-          />
-        </div>
-
         <div className="container mx-auto px-4 py-8 relative z-10">
           <Button
             onClick={onBack}
@@ -90,7 +126,17 @@ export function NationDetail({ nation, onBack }: NationDetailProps) {
           </Button>
 
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-            <span className="text-7xl md:text-8xl">{nation.flag}</span>
+            <div className="flex h-20 w-28 items-center justify-center rounded-xl border border-white/20 bg-white/15 p-2 shadow-inner md:h-24 md:w-32">
+              <NationFlag
+                className="h-full w-full"
+                code={nation.code}
+                emoji={nation.flag}
+                fallbackClassName="text-7xl md:text-8xl"
+                label={nation.name}
+                nationId={nation.id}
+                showBrazilStars
+              />
+            </div>
             <div>
               <h1
                 className="text-4xl md:text-5xl font-bold mb-2"
@@ -102,10 +148,10 @@ export function NationDetail({ nation, onBack }: NationDetailProps) {
                 className="flex items-center gap-4 text-sm"
                 style={{ color: isLightPrimary ? "#333" : "#ddd" }}
               >
-                <span className="font-medium">{nation.confederation}</span>
+                <span className="font-medium">{getTranslatedConfederation(nation.confederation)}</span>
                 <span>|</span>
                 <span>
-                  {t("squadValue")}: <strong>{nation.totalSquadValue}</strong>
+                  {t("squadValue")}: <strong>{formatSquadValue(nation.totalSquadValue)}</strong>
                 </span>
                 <span>|</span>
                 <span>

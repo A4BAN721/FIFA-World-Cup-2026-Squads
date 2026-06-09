@@ -29,11 +29,13 @@ const qualifiedNationIds = new Set(Object.values(fifaGroups).flat());
 
 interface NationsGridProps {
   initialSelectedNationId?: string | null;
+  onNationBack?: () => void;
 }
 
-export function NationsGrid({ initialSelectedNationId }: NationsGridProps) {
+export function NationsGrid({ initialSelectedNationId, onNationBack }: NationsGridProps) {
   const { t, language } = useLanguage();
   const [selectedNationId, setSelectedNationId] = useState<string | null>(initialSelectedNationId || null);
+  const [groupScrollY, setGroupScrollY] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [nations, setNations] = useState<Nation[]>(fallbackNations);
 
@@ -63,7 +65,13 @@ export function NationsGrid({ initialSelectedNationId }: NationsGridProps) {
 
   useEffect(() => {
     const handleNationSelection = (event: CustomEvent) => {
-      setSelectedNationId(event.detail);
+      const detail = event.detail;
+      const nationId = typeof detail === "string" ? detail : detail?.nationId;
+
+      if (!nationId) return;
+
+      setGroupScrollY(null);
+      setSelectedNationId(nationId);
     };
 
     window.addEventListener("nationSelected", handleNationSelection as EventListener);
@@ -72,6 +80,12 @@ export function NationsGrid({ initialSelectedNationId }: NationsGridProps) {
       window.removeEventListener("nationSelected", handleNationSelection as EventListener);
     };
   }, []);
+
+  useEffect(() => {
+    if (selectedNationId) {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    }
+  }, [selectedNationId]);
 
   const qualifiedNations = useMemo(
     () => nations.filter((nation) => qualifiedNationIds.has(nation.id)),
@@ -127,11 +141,30 @@ export function NationsGrid({ initialSelectedNationId }: NationsGridProps) {
     ? qualifiedNations.find((n) => n.id === selectedNationId)
     : null;
 
+  const handleOpenNation = (nationId: string) => {
+    setGroupScrollY(window.scrollY);
+    setSelectedNationId(nationId);
+  };
+
+  const handleBackFromNation = () => {
+    const scrollY = groupScrollY;
+
+    setSelectedNationId(null);
+    setGroupScrollY(null);
+    onNationBack?.();
+
+    if (scrollY !== null) {
+      window.setTimeout(() => {
+        window.scrollTo({ top: scrollY, left: 0, behavior: "auto" });
+      }, 0);
+    }
+  };
+
   if (selectedNation) {
     return (
       <NationDetail
         nation={selectedNation}
-        onBack={() => setSelectedNationId(null)}
+        onBack={handleBackFromNation}
       />
     );
   }
@@ -150,7 +183,7 @@ export function NationsGrid({ initialSelectedNationId }: NationsGridProps) {
           />
         </div>
         <p className="mt-2 text-center text-sm text-muted-foreground">
-          Click a nation to view their squad
+          {t("clickNationToViewSquad")}
         </p>
       </div>
 
@@ -169,7 +202,7 @@ export function NationsGrid({ initialSelectedNationId }: NationsGridProps) {
                 <NationCard
                   key={nation.id}
                   nation={nation}
-                  onClick={() => setSelectedNationId(nation.id)}
+                  onClick={() => handleOpenNation(nation.id)}
                   index={index}
                 />
               ))}

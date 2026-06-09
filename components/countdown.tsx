@@ -30,8 +30,8 @@ export function Countdown() {
   });
 
   useEffect(() => {
-    // Target date: June 11, 2026, 07:00 PM UTC.
-    const targetDate = new Date("2026-06-11T19:00:00Z").getTime();
+    // Target date: June 12, 2026, 01:00 AM GMT+6.
+    const targetDate = new Date("2026-06-12T01:00:00+06:00").getTime();
 
     const calculateTimeLeft = () => {
       const now = new Date().getTime();
