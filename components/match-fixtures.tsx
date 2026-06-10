@@ -12,6 +12,7 @@ import { useLanguage } from "./language-provider";
 import { useTheme } from "next-themes";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { LiveMatchCard } from "@/components/live-match";
 import { NationFlag } from "./nation-flag";
 import { Search, Calendar, MapPin, Clock } from "lucide-react";
 import { motion } from "framer-motion";
@@ -375,13 +376,14 @@ export function MatchFixtures({
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: stageIndex * 0.02 + mdIndex * 0.01 + matchIndex * 0.005, duration: 0.2 }}
                           >
-                            <Card 
-                              className="group relative overflow-hidden rounded-2xl backdrop-blur-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
-                              style={{
-                                backgroundColor: getCardBackgroundColor(),
-                                borderColor: getCardBorderColor()
-                              }}
-                            >
+                            <LiveMatchCard match={match}>
+                              <Card 
+                                className="group relative overflow-hidden rounded-2xl backdrop-blur-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                                style={{
+                                  backgroundColor: getCardBackgroundColor(),
+                                  borderColor: getCardBorderColor()
+                                }}
+                              >
                               <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.08),transparent_15%),radial-gradient(circle_at_bottom_right,_rgba(0,0,0,0.03),transparent_20%)]" />
                               
                               <div className="relative p-3">
@@ -499,7 +501,8 @@ export function MatchFixtures({
                                   <span className="truncate">{getTranslatedStadium(match.stadium)}</span>
                                 </div>
                               </div>
-                            </Card>
+                              </Card>
+                            </LiveMatchCard>
                           </motion.div>
                         );
                       })}
@@ -544,13 +547,14 @@ export function MatchFixtures({
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: stageIndex * 0.02 + matchIndex * 0.01, duration: 0.2 }}
                     >
-                      <Card 
-                        className="group relative overflow-hidden rounded-2xl backdrop-blur-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
-                        style={{
-                          backgroundColor: getCardBackgroundColor(),
-                          borderColor: getCardBorderColor()
-                        }}
-                      >
+                      <LiveMatchCard match={match}>
+                        <Card 
+                          className="group relative overflow-hidden rounded-2xl backdrop-blur-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                          style={{
+                            backgroundColor: getCardBackgroundColor(),
+                            borderColor: getCardBorderColor()
+                          }}
+                        >
                         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.08),transparent_15%),radial-gradient(circle_at_bottom_right,_rgba(0,0,0,0.03),transparent_20%)]" />
                         
                         <div className="relative p-3">
@@ -662,7 +666,8 @@ export function MatchFixtures({
                             <span className="truncate">{getTranslatedStadium(match.stadium)}</span>
                           </div>
                         </div>
-                      </Card>
+                        </Card>
+                      </LiveMatchCard>
                     </motion.div>
                   );
                 })}
