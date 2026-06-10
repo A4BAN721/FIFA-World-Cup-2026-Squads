@@ -26,10 +26,10 @@ const fifaGroups: Record<string, string[]> = {
 };
 
 const qualifiedNationIds = new Set(Object.values(fifaGroups).flat());
-const localGroupANationIds = new Set(fifaGroups.A);
-const localGroupANations = new Map(
+const localDataNationIds = new Set([...fifaGroups.A, ...fifaGroups.B]);
+const localDataNations = new Map(
   fallbackNations
-    .filter((nation) => localGroupANationIds.has(nation.id))
+    .filter((nation) => localDataNationIds.has(nation.id))
     .map((nation) => [nation.id, nation])
 );
 
@@ -52,10 +52,10 @@ export function NationsGrid({ initialSelectedNationId, onNationBack }: NationsGr
       .then((supabaseNations) => {
         if (isMounted && supabaseNations.length > 0) {
           const mergedNations = supabaseNations.map(
-            (nation) => localGroupANations.get(nation.id) ?? nation
+            (nation) => localDataNations.get(nation.id) ?? nation
           );
 
-          for (const [nationId, nation] of localGroupANations) {
+          for (const [nationId, nation] of localDataNations) {
             if (!mergedNations.some((item) => item.id === nationId)) {
               mergedNations.push(nation);
             }

@@ -282,7 +282,7 @@ function PlayerCard({ player, nationColors, index, t }: PlayerCardProps) {
         <div className="p-4">
           <div className="flex gap-4">
             <div
-              className="w-20 h-20 rounded-lg flex-shrink-0 border-2 bg-muted/70 flex items-center justify-center text-2xl font-bold text-foreground"
+              className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-lg border-2 bg-muted/70 text-[2.75rem] font-black leading-none text-foreground tabular-nums tracking-tight"
               style={{
                 borderColor: `${nationColors.primary}30`,
                 backgroundColor: `${nationColors.secondary}15`,
@@ -293,7 +293,7 @@ function PlayerCard({ player, nationColors, index, t }: PlayerCardProps) {
 
             {/* Player Info */}
             <div className="flex-1 min-w-0">
-              <h3 className="font-bold text-foreground truncate group-hover:text-primary transition-colors">
+              <h3 className="truncate font-bold uppercase text-foreground transition-colors group-hover:text-primary">
                 {player.fullName}
               </h3>
               <p
@@ -302,7 +302,7 @@ function PlayerCard({ player, nationColors, index, t }: PlayerCardProps) {
               >
                 {t(player.position.toLowerCase())}
               </p>
-              <p className="text-xs text-muted-foreground truncate">
+              <p className="truncate text-xs text-muted-foreground">
                 {player.club}
               </p>
             </div>
