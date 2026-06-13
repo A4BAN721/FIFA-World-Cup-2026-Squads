@@ -1,4 +1,14 @@
-export type MatchStatus = "scheduled" | "live" | "half_time" | "finished";
+export type MatchStatus =
+  | "scheduled"
+  | "live"
+  | "half_time"
+  | "finished"
+  | "extra_time"
+  | "penalties"
+  | "postponed"
+  | "cancelled"
+  | "suspended"
+  | "interrupted";
 
 export type MatchPhase =
   | "pre_match"
@@ -13,24 +23,53 @@ export type MatchEventType =
   | "goal"
   | "penalty_goal"
   | "own_goal"
+  | "missed_penalty"
   | "yellow_card"
   | "red_card"
+  | "second_yellow"
   | "substitution"
   | "var"
-  | "penalty_shootout";
+  | "penalty_shootout_goal"
+  | "penalty_shootout_miss"
+  | "match_started"
+  | "half_time"
+  | "second_half"
+  | "match_ended";
 
 export interface MatchEvent {
   id: string;
+  externalEventId?: string | null;
   matchId: string;
   minute: number;
   stoppageMinute?: number | null;
+  sequenceNumber?: number | null;
   eventType: MatchEventType;
   teamId?: string | null;
   teamName?: string | null;
   playerName?: string | null;
   assistPlayerName?: string | null;
+  substitutePlayerName?: string | null;
   description?: string | null;
   createdAt: string;
+}
+
+export interface MatchStatistics {
+  homePossession?: number | null;
+  awayPossession?: number | null;
+  homeShots?: number | null;
+  awayShots?: number | null;
+  homeShotsOnTarget?: number | null;
+  awayShotsOnTarget?: number | null;
+  homeYellowCards?: number | null;
+  awayYellowCards?: number | null;
+  homeRedCards?: number | null;
+  awayRedCards?: number | null;
+  homeCorners?: number | null;
+  awayCorners?: number | null;
+  homeFouls?: number | null;
+  awayFouls?: number | null;
+  homeOffsides?: number | null;
+  awayOffsides?: number | null;
 }
 
 export interface LiveMatch {
@@ -44,7 +83,9 @@ export interface LiveMatch {
   minute?: number | null;
   stoppageMinute?: number | null;
   startedAt?: string | null;
+  finalScoreConfirmedAt?: string | null;
   updatedAt: string;
+  statistics: MatchStatistics;
   events: MatchEvent[];
 }
 

@@ -1,7 +1,17 @@
 import type { LiveMatch, MatchPhase, MatchStatus } from "./types";
 
 export function normalizeMatchStatus(status?: string | null): MatchStatus {
-  if (status === "live" || status === "half_time" || status === "finished") {
+  if (
+    status === "live" ||
+    status === "half_time" ||
+    status === "finished" ||
+    status === "extra_time" ||
+    status === "penalties" ||
+    status === "postponed" ||
+    status === "cancelled" ||
+    status === "suspended" ||
+    status === "interrupted"
+  ) {
     return status;
   }
 
@@ -24,7 +34,7 @@ export function normalizeMatchPhase(phase?: string | null): MatchPhase {
 }
 
 export function isVisibleLiveState(match: LiveMatch | null): match is LiveMatch {
-  return Boolean(match && match.status !== "scheduled");
+  return Boolean(match && (match.status !== "scheduled" || match.finalScoreConfirmedAt));
 }
 
 export function formatMatchMinute(minute?: number | null, stoppageMinute?: number | null): string {

@@ -106,6 +106,31 @@ export interface NormalizedCompetition {
 }
 
 /**
+ * Provider-independent match statistics.
+ * New statistics can be added without changing component data flow by using
+ * the flexible `extra` bag for provider-specific or experimental metrics.
+ */
+export interface NormalizedMatchStatistics {
+  homePossession?: number;
+  awayPossession?: number;
+  homeShots?: number;
+  awayShots?: number;
+  homeShotsOnTarget?: number;
+  awayShotsOnTarget?: number;
+  homeYellowCards?: number;
+  awayYellowCards?: number;
+  homeRedCards?: number;
+  awayRedCards?: number;
+  homeCorners?: number;
+  awayCorners?: number;
+  homeFouls?: number;
+  awayFouls?: number;
+  homeOffsides?: number;
+  awayOffsides?: number;
+  extra?: Record<string, number | string | boolean | null>;
+}
+
+/**
  * Normalized event data
  */
 export interface NormalizedEvent {
@@ -136,10 +161,14 @@ export interface LiveMatchState {
   homeScore: number;
   awayScore: number;
   minute: number;
+  stoppageMinute?: number;
   period: MatchPeriod;
   status: MatchStatus;
   lastEventId: string;
   lastEventType: NormalizedEventType;
+  finalScoreConfirmedAt?: string;
+  sequenceNumber?: number;
+  statistics?: NormalizedMatchStatistics;
   updatedAt: string;
 }
 

@@ -51,6 +51,24 @@ const nationColorOverrides: Record<string, Nation["jerseyColors"]> = {
   usa: { primary: "#FFFFFF", secondary: "#BF0A30", accent: "#002868" },
 };
 
+function formatSupabaseError(error: unknown) {
+  if (!error || typeof error !== "object") return error;
+
+  const maybeError = error as {
+    code?: string;
+    message?: string;
+    details?: string;
+    hint?: string;
+  };
+
+  return {
+    code: maybeError.code,
+    message: maybeError.message,
+    details: maybeError.details,
+    hint: maybeError.hint,
+  };
+}
+
 export async function getNations(): Promise<Nation[]> {
   if (!getSupabaseConfig()) {
     return [];
@@ -61,11 +79,15 @@ export async function getNations(): Promise<Nation[]> {
   const [{ data: nationRows, error: nationError }, { data: playerRows, error: playerError }] =
     await Promise.all([
       supabase.from("nations").select("*"),
-      supabase.from("players").select("*"),
+      supabase.from("squad_players").select("*"),
     ]);
 
-  if (nationError) throw nationError;
-  if (playerError) throw playerError;
+  if (nationError) {
+    throw new Error("Failed to fetch nations", { cause: formatSupabaseError(nationError) });
+  }
+  if (playerError) {
+    throw new Error("Failed to fetch squad players", { cause: formatSupabaseError(playerError) });
+  }
 
   const playersByNation = new Map<string, Player[]>();
   for (const row of (playerRows ?? []) as PlayerRow[]) {
@@ -112,7 +134,9 @@ export async function getMatchFixtures(): Promise<Match[]> {
   const supabase = createClient();
   const { data, error } = await supabase.from("match_fixtures").select("*");
 
-  if (error) throw error;
+  if (error) {
+    throw new Error("Failed to fetch match fixtures", { cause: formatSupabaseError(error) });
+  }
 
   return ((data ?? []) as MatchFixtureRow[])
     .map((row) => ({
@@ -136,7 +160,9 @@ export async function getTranslations(): Promise<Record<string, Record<string, s
   const supabase = createClient();
   const { data, error } = await supabase.from("translations").select("*");
 
-  if (error) throw error;
+  if (error) {
+    throw new Error("Failed to fetch translations", { cause: formatSupabaseError(error) });
+  }
 
   return ((data ?? []) as TranslationRow[]).reduce<Record<string, Record<string, string>>>(
     (translations, row) => {

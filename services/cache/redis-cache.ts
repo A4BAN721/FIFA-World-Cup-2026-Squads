@@ -19,9 +19,16 @@
  * - api:match:{id}:events - Match events
  */
 
+/**
+ * Redis cache configuration.
+ * 
+ * SECURITY: `password` is stored internally and MUST NOT be logged,
+ * displayed in error messages, or serialized in any output.
+ */
 export interface CacheConfig {
   host: string;
   port: number;
+  /** @internal - Do NOT log or expose this value */
   password?: string;
   keyPrefix?: string;
   defaultTTL?: number;

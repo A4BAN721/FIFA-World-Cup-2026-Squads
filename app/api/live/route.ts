@@ -29,7 +29,7 @@ const cache = RedisCache.getInstance();
 function getSupabase() {
   if (!supabase) {
     if (!supabaseUrl || !supabaseKey) {
-      throw new Error('Missing Supabase environment variables (NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)');
+      throw new Error('Missing required Supabase configuration. Check your environment variables.');
     }
     supabase = createClient(supabaseUrl, supabaseKey);
   }

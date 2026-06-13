@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { createBrowserFootballProvider } from "@/lib/live-data/browser-provider";
 import type { FootballDataProvider } from "@/lib/live-data/football-provider";
 import type { LiveMatch } from "@/lib/live-data/types";
+import { useLiveMatchRealtime } from "./use-live-match-realtime";
 
 type UseLiveMatchOptions = {
   enabled?: boolean;
@@ -50,6 +51,47 @@ export function useLiveMatch(
       setIsLoading(false);
     }
   }, [activeProvider, enabled, matchId]);
+
+  useLiveMatchRealtime({
+    matchId,
+    enabled: enabled && Boolean(activeProvider),
+    onStateChange: (state) => {
+      setLiveMatch((current) => {
+        if (!current) return current;
+
+        return {
+          ...current,
+          status: state.status as LiveMatch["status"],
+          phase: state.period as LiveMatch["phase"],
+          homeScore: state.homeScore,
+          awayScore: state.awayScore,
+          minute: state.minute,
+          statistics: {
+            ...current.statistics,
+            homePossession: state.homePossession,
+            awayPossession: state.awayPossession,
+            homeShots: state.homeShots,
+            awayShots: state.awayShots,
+            homeShotsOnTarget: state.homeShotsOnTarget,
+            awayShotsOnTarget: state.awayShotsOnTarget,
+            homeYellowCards: state.homeYellowCards,
+            awayYellowCards: state.awayYellowCards,
+            homeRedCards: state.homeRedCards,
+            awayRedCards: state.awayRedCards,
+            homeCorners: state.homeCorners,
+            awayCorners: state.awayCorners,
+            homeFouls: state.homeFouls,
+            awayFouls: state.awayFouls,
+          },
+          updatedAt: new Date().toISOString(),
+        };
+      });
+      setLastUpdated(new Date());
+    },
+    onEvent: () => {
+      void refresh();
+    },
+  });
 
   useEffect(() => {
     if (!enabled || !activeProvider) {

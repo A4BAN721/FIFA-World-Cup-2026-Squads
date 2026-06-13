@@ -27,7 +27,10 @@ export function MatchStatusBadge({
         "inline-flex h-6 items-center rounded-full px-2 text-[10px] font-bold uppercase tracking-normal",
         status === "live" && "bg-red-500 text-white shadow-sm shadow-red-500/30",
         status === "half_time" && "bg-amber-500 text-black",
+        (status === "extra_time" || status === "penalties") && "bg-purple-600 text-white",
         status === "finished" && "bg-zinc-800 text-white dark:bg-zinc-100 dark:text-zinc-950",
+        (status === "postponed" || status === "cancelled" || status === "suspended" || status === "interrupted") &&
+          "bg-muted text-muted-foreground",
         status === "scheduled" && "bg-primary/10 text-primary",
         className
       )}
@@ -45,6 +48,12 @@ function getStatusLabel(
 ) {
   if (status === "finished" || phase === "full_time") return "FT";
   if (status === "half_time" || phase === "half_time") return "HT";
+  if (status === "extra_time") return `ET ${formatMatchMinute(minute, stoppageMinute)}`;
+  if (status === "penalties") return "PEN";
+  if (status === "postponed") return "Postponed";
+  if (status === "cancelled") return "Cancelled";
+  if (status === "suspended") return "Suspended";
+  if (status === "interrupted") return "Interrupted";
   if (status === "live") return `LIVE ${formatMatchMinute(minute, stoppageMinute)}`;
   return "Scheduled";
 }

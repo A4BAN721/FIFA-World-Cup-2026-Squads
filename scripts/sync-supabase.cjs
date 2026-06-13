@@ -22,9 +22,9 @@ function runSeed(reason) {
   isSeeding = true;
   console.log(`\nSyncing Supabase database (${reason})...`);
 
-  const child = spawn("npm.cmd", ["run", "db:seed"], {
+  const child = spawn(process.platform === "win32" ? "npm.cmd" : "npm", ["run", "db:seed"], {
     cwd: rootDir,
-    shell: false,
+    shell: process.platform === "win32",
     stdio: "inherit",
   });
 

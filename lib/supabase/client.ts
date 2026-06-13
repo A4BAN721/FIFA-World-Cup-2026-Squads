@@ -18,7 +18,7 @@ export function createClient() {
 
   if (!config) {
     throw new Error(
-      "Missing Supabase config. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY.",
+      "Missing Supabase configuration. Check your environment variables.",
     );
   }
 

@@ -16,7 +16,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { createClient } from '../lib/supabase/client';
+import { createClient, getSupabaseConfig } from '../lib/supabase/client';
 import type { RealtimeChannel, RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 
 /**
@@ -94,7 +94,7 @@ export function useLiveMatchRealtime({
   onStateChange,
   onConnectionChange,
 }: UseLiveMatchRealtimeOptions): UseLiveMatchRealtimeReturn {
-  const supabase = createClient();
+  const [supabase] = useState(() => (getSupabaseConfig() ? createClient() : null));
   const channelRef = useRef<RealtimeChannel | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectAttemptsRef = useRef(0);
@@ -114,7 +114,7 @@ export function useLiveMatchRealtime({
   }, []);
 
   useEffect(() => {
-    if (!matchId || !enabled) return;
+    if (!matchId || !enabled || !supabase) return;
 
     let mounted = true;
     const MAX_EVENTS = 50;
@@ -293,13 +293,13 @@ export function useLiveScoreboard(options?: {
   connectionStatus: ConnectionStatus;
   error: string | null;
 } {
-  const supabase = createClient();
+  const [supabase] = useState(() => (getSupabaseConfig() ? createClient() : null));
   const [liveMatches, setLiveMatches] = useState<any[]>([]);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('disconnected');
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (options?.enabled === false) return;
+    if (options?.enabled === false || !supabase) return;
 
     const channel = supabase.channel('live-scores');
 

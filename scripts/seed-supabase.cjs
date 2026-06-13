@@ -6,6 +6,13 @@ const { Client } = require("pg");
 
 const rootDir = path.resolve(__dirname, "..");
 
+function getPostgresSslConfig(connectionString) {
+  const url = new URL(connectionString);
+  const localHostnames = new Set(["localhost", "127.0.0.1", "::1"]);
+
+  return localHostnames.has(url.hostname) ? false : { rejectUnauthorized: false };
+}
+
 function loadEnvFile(filePath) {
   if (!fs.existsSync(filePath)) return;
 
@@ -47,7 +54,7 @@ function ensureEnv() {
   loadEnvFile(path.join(rootDir, ".env"));
 
   if (!process.env.DATABASE_URL) {
-    throw new Error("DATABASE_URL is missing. Add it to .env.local before seeding.");
+    throw new Error("DATABASE_URL is missing. Check your environment configuration.");
   }
 }
 
@@ -56,7 +63,7 @@ async function createSchema(client) {
     select count(*)::int as existing_tables
     from pg_tables
     where schemaname = 'public'
-      and tablename in ('nations', 'players', 'match_fixtures', 'translations');
+      and tablename in ('nations', 'squad_players', 'match_fixtures', 'translations');
   `);
 
   const hasAllTables = rows[0]?.existing_tables === 4;
@@ -75,7 +82,7 @@ async function createSchema(client) {
       updated_at timestamptz not null default now()
     );
 
-    create table if not exists public.players (
+    create table if not exists public.squad_players (
       id text primary key,
       nation_id text not null references public.nations(id) on delete cascade,
       full_name text not null,
@@ -90,7 +97,7 @@ async function createSchema(client) {
       updated_at timestamptz not null default now()
     );
 
-    create index if not exists players_nation_id_idx on public.players(nation_id);
+    create index if not exists squad_players_nation_id_idx on public.squad_players(nation_id);
 
     create table if not exists public.match_fixtures (
       id text primary key,
@@ -119,14 +126,14 @@ async function createSchema(client) {
 
   await client.query(`
       alter table public.nations enable row level security;
-      alter table public.players enable row level security;
+      alter table public.squad_players enable row level security;
       alter table public.match_fixtures enable row level security;
       alter table public.translations enable row level security;
     `);
 
   const policyStatements = [
     ["nations", "nations_select_public"],
-    ["players", "players_select_public"],
+    ["squad_players", "squad_players_select_public"],
     ["match_fixtures", "match_fixtures_select_public"],
     ["translations", "translations_select_public"],
   ];
@@ -140,6 +147,7 @@ async function createSchema(client) {
       to anon, authenticated
       using (true);
     `);
+    await client.query(`grant select on public.${table} to anon, authenticated;`);
   }
 }
 
@@ -150,7 +158,7 @@ async function seedData(client, data) {
     console.log("Creating schema...");
     await createSchema(client);
     console.log("Replacing existing website data...");
-    await client.query("truncate table public.players, public.nations, public.match_fixtures, public.translations cascade;");
+    await client.query("truncate table public.squad_players, public.nations, public.match_fixtures, public.translations cascade;");
 
     console.log("Uploading nations...");
     await client.query(
@@ -194,7 +202,7 @@ async function seedData(client, data) {
     console.log("Uploading players...");
     await client.query(
       `
-        insert into public.players (
+        insert into public.squad_players (
           id, nation_id, full_name, position, club, height, weight,
           strong_foot, market_value, jersey_number
         )
@@ -324,7 +332,7 @@ async function main() {
   const client = new Client({
     connectionString: process.env.DATABASE_URL,
     connectionTimeoutMillis: 15_000,
-    ssl: { rejectUnauthorized: false },
+    ssl: getPostgresSslConfig(process.env.DATABASE_URL),
   });
 
   console.log("Connecting to Supabase Postgres...");
@@ -340,7 +348,7 @@ async function main() {
     const { rows } = await client.query(`
       select
         (select count(*)::int from public.nations) as nations,
-        (select count(*)::int from public.players) as players,
+        (select count(*)::int from public.squad_players) as squad_players,
         (select count(*)::int from public.match_fixtures) as match_fixtures,
         (select count(*)::int from public.translations) as translations;
     `);

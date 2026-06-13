@@ -26,7 +26,7 @@ const cache = RedisCache.getInstance();
 function getSupabase() {
   if (!supabase) {
     if (!supabaseUrl || !supabaseKey) {
-      throw new Error('Missing Supabase environment variables (NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)');
+      throw new Error('Missing required Supabase configuration. Check your environment variables.');
     }
     supabase = createClient(supabaseUrl, supabaseKey);
   }
@@ -35,9 +35,9 @@ function getSupabase() {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
+  const { id } = await params;
   const { searchParams } = new URL(request.url);
   const eventType = searchParams.get('type');
   const limit = parseInt(searchParams.get('limit') || '100', 10);

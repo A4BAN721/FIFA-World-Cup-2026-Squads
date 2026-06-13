@@ -228,31 +228,21 @@ export function NationDetail({ nation, onBack }: NationDetailProps) {
       {nation.headCoach && (
         <div className="container mx-auto px-4 pb-8">
           <div
-            className="rounded-xl p-6 border backdrop-blur-sm"
+            className="rounded-xl p-8 border backdrop-blur-sm text-center"
             style={{
               borderColor: `${primaryColor}20`,
               backgroundColor: `${primaryColor}08`,
             }}
           >
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-              <div
-                className="flex h-14 w-14 items-center justify-center rounded-full text-white text-lg font-bold shrink-0"
-                style={{ backgroundColor: primaryColor }}
-              >
-                HC
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground uppercase tracking-wider font-medium">
-                  Head Coach
-                </p>
-                <p
-                  className="font-bold text-2xl sm:text-3xl"
-                  style={{ color: primaryColor }}
-                >
-                  {nation.headCoach}
-                </p>
-              </div>
-            </div>
+            <p className="text-sm text-muted-foreground uppercase tracking-wider font-medium mb-2">
+              Head Coach
+            </p>
+            <p
+              className="font-bold text-3xl sm:text-4xl md:text-5xl"
+              style={{ color: primaryColor }}
+            >
+              {nation.headCoach}
+            </p>
           </div>
         </div>
       )}

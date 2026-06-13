@@ -25,7 +25,7 @@ const cache = RedisCache.getInstance();
 function getSupabase() {
   if (!supabase) {
     if (!supabaseUrl || !supabaseKey) {
-      throw new Error('Missing Supabase environment variables (NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)');
+      throw new Error('Missing required Supabase configuration. Check your environment variables.');
     }
     supabase = createClient(supabaseUrl, supabaseKey);
   }
@@ -34,9 +34,9 @@ function getSupabase() {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
+  const { id } = await params;
 
   try {
     const db = getSupabase();
@@ -85,10 +85,11 @@ export async function GET(
       .order('minute', { ascending: true })
       .limit(100);
 
+    const matchRecord = match as Record<string, unknown> & { live_state?: unknown };
     const response = {
-      ...match,
+      ...matchRecord,
       events: events || [],
-      live_state: match.live_state || null,
+      live_state: matchRecord.live_state || null,
     };
 
     // Cache the response
